@@ -3,6 +3,7 @@ import subprocess
 import time
 from datetime import datetime
 import argparse
+import os
 
 # Function to ping a URL once and return the latency
 def single_ping(url: str):
@@ -18,7 +19,10 @@ def single_ping(url: str):
 # NOTE: This is a bit wasteful to re-create the dataframe every time, but it's not worth optimizing. We're in a <10k rows situation (per day)
 def write_pings(full_filename: str, times, latencies):
     df = pd.DataFrame({'Time (s)': times, 'Latency (in ms)': latencies})
-    df.to_csv(full_filename, index=False)
+    if os.path.exists(full_filename):
+        df.to_csv(full_filename, mode='a', header=False, index=False)
+    else:
+        df.to_csv(full_filename, mode='w', header=True, index=False)
 
 # "Main function" used to run the ping test, while writing data to a CSV file for further data analysis.
 def run_ping_test_forever(filename: str, write_cadence: int, ping_url: str):
@@ -32,14 +36,12 @@ def run_ping_test_forever(filename: str, write_cadence: int, ping_url: str):
         current_time = now.strftime('%Y-%m-%d %H:%M:%S')
         date_today = now.date()
 
-        if date_today != current_date:
+        # We will reset the dataframe every time that we hit the write_cadence or that we roll over to a new day.
+        if (date_today != current_date) or (time_in_s % write_cadence == 0):
             write_pings(f'{filename}_{current_date}.csv', times, latencies)
             times = []
             latencies = []
             current_date = date_today
-
-        if time_in_s % write_cadence == 0:
-            write_pings(f'{filename}_{current_date}.csv', times, latencies)
 
         latency = single_ping(ping_url)
         times.append(current_time)
