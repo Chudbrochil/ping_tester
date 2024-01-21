@@ -10,4 +10,9 @@ This would start an infinite ping test (until you hit Ctrl-C), with the file nam
 
 Refer to ping\_analysis.ipynb for some really simple data analytics about the ping data. We can look at mean, median, quartiles, of the successful pings. Further, we can categorize the ping errors (Request Timed out, 100% packet loss).
 
+Here are a few example plots, visualizing latency history, and rolling average of latencies.
+
+![image](https://github.com/Chudbrochil/ping_tester/assets/16054782/f0d02f60-3e32-4b2f-a9db-42ec24cece11)
+
+![image](https://github.com/Chudbrochil/ping_tester/assets/16054782/87d9eb1c-4dcc-4ede-b2b0-ede81fc807a1)
 
