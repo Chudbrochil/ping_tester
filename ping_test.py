@@ -2,59 +2,61 @@ import pandas as pd
 import subprocess
 import time
 from datetime import datetime
+import argparse
 
-
-# Function to perform a single ping and return the latency
+# Function to ping a URL once and return the latency
 def single_ping(url: str):
-    # Pinging a URL we have been given (e.g. www.google.com, 8.8.8.8)
     response = subprocess.run(['ping', '-c', '1', url], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    # Parsing the output for time
     output = response.stdout
     if 'time=' in output:
         latency = float(output.split('time=')[1].split(' ')[0])
     else:
-        # If the ping request times out or fails, return raw output (e.g. Request timeout for icmp_seq 0)
         latency = output
     return latency
 
-# Dataframe writing function for our time/latency schema.
+# Function to write the ping data to a CSV file
+# NOTE: This is a bit wasteful to re-create the dataframe every time, but it's not worth optimizing. We're in a <10k rows situation (per day)
 def write_pings(full_filename: str, times, latencies):
-
-    df = pd.DataFrame({'Time': times, 'Latency': latencies})
+    df = pd.DataFrame({'Time (s)': times, 'Latency (in ms)': latencies})
     df.to_csv(full_filename, index=False)
 
-# Function to run the ping test and save to a new CSV file each day
-def run_ping_test_forever(filename: str, write_cadence: int = 10, ping_url: str = 'www.google.com'):
-    # Initialize variables
+# "Main function" used to run the ping test, while writing data to a CSV file for further data analysis.
+def run_ping_test_forever(filename: str, write_cadence: int, ping_url: str):
     times = []
     latencies = []
     current_date = datetime.now().date()
     time_in_s = 0
 
     while True:
-        # Get current time and date
         now = datetime.now()
         current_time = now.strftime('%Y-%m-%d %H:%M:%S')
         date_today = now.date()
 
-        # If the date has rolled over, let's write the last results for the day before we start a new file.
         if date_today != current_date:
-            write_pings(f'{filename}_{current_date}.csv', pd.DataFrame({'Time': times, 'Latency': latencies}))
+            write_pings(f'{filename}_{current_date}.csv', times, latencies)
+            times = []
+            latencies = []
             current_date = date_today
 
         if time_in_s % write_cadence == 0:
-            write_pings(f'{filename}_{current_date}.csv', pd.DataFrame({'Time': times, 'Latency': latencies}))
+            write_pings(f'{filename}_{current_date}.csv', times, latencies)
 
-        # Perform a ping
         latency = single_ping(ping_url)
-        # Store results in the lists
         times.append(current_time)
         latencies.append(latency)
 
-        # Wait for 1 second
         time_in_s += 1
         time.sleep(1)
 
-run_ping_test_forever(filename="ping_data/", write_cadence=30, ping_url = 'www.google.com')
+def main():
+    parser = argparse.ArgumentParser(description='Run a continuous ping test and log results to a CSV file.')
+    parser.add_argument('--filename', type=str, default='ping_data/', help='Base filename for the CSV files.')
+    parser.add_argument('--write_cadence', type=int, default=30, help='Interval in seconds for writing data to CSV.')
+    parser.add_argument('--ping_url', type=str, default='www.google.com', help='URL to ping.')
 
+    args = parser.parse_args()
 
+    run_ping_test_forever(filename=args.filename, write_cadence=args.write_cadence, ping_url=args.ping_url)
+
+if __name__ == '__main__':
+    main()
