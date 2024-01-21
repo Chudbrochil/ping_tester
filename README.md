@@ -1,6 +1,8 @@
 # ping_tester
 
-Fun project to test my ISPs line quality.
+NOTE: Feel free to use this code/repo however you wish. This project is purely for fun aside from creating some personal evidence for my ISP :)
+
+It's subtle to detect any latency/packet loss issues with your internet. This repo can diagnose line quality issues, but also analyze your latency across time (think analyzing "peak time"). You can even run these scripts to analyze your latency to specific servers (video game servers, web hosts).
 
 The file `ping_test.py` can be ran with command line arguments on the CLI. Here are some example usages:
 
