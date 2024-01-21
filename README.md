@@ -16,9 +16,36 @@ Refer to ping\_analysis.ipynb for some really simple data analytics about the pi
 
 ### Sample visualizations
 
-Here are a few example plots, visualizing latency history, and rolling average of latencies.
+Here are a few example plots.
 
-![image](https://github.com/Chudbrochil/ping_tester/assets/16054782/f0d02f60-3e32-4b2f-a9db-42ec24cece11)
+Latency raw history (over a whole day)
 
-![image](https://github.com/Chudbrochil/ping_tester/assets/16054782/87d9eb1c-4dcc-4ede-b2b0-ede81fc807a1)
+![image](https://github.com/Chudbrochil/ping_tester/assets/16054782/e8e7bfe6-ddbc-4c01-bea5-6335e6a4b4ea)
+
+Rolling average of latency
+
+![image](https://github.com/Chudbrochil/ping_tester/assets/16054782/8fb9a3ef-a006-41d1-a0a8-4354091d08f7)
+
+Boxplot of latency, with 95% outliers removed.
+
+![image](https://github.com/Chudbrochil/ping_tester/assets/16054782/0871f768-ab17-44c5-84db-543646ca1b80)
+
+Anomaly detection (IsolationForest)
+
+![image](https://github.com/Chudbrochil/ping_tester/assets/16054782/5edd3dc1-51ef-4716-9d61-a60cd8ff6eb0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
