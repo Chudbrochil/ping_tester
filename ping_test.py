@@ -16,7 +16,6 @@ def single_ping(url: str):
     return latency
 
 # Function to write the ping data to a CSV file
-# NOTE: This is a bit wasteful to re-create the dataframe every time, but it's not worth optimizing. We're in a <10k rows situation (per day)
 def write_pings(full_filename: str, times, latencies):
     df = pd.DataFrame({'Time (s)': times, 'Latency (in ms)': latencies})
     if os.path.exists(full_filename):
